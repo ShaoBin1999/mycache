@@ -11,6 +11,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * cache是一个大的概念，应该叫做cache组
+ * 同一个组的cache在一个map里面，所有的cache被cacheMap所管理
+ *
+ * 在属性注入后，loadCache获得所有的cache，然后注册到cacheMap和cacheNames中；或者re-initialize at runtime
+ *
+ * getCache可能会因为懒加载而找不到，这时候需要重新
+ * 但是！这个功能是提供给后面版本的
+ *
+ * 适用于static environment，因为cache一但加载后是不变的
+ */
 
 public abstract class AbstractCacheManager
     implements CacheManager,InitializingBean {
@@ -44,8 +55,6 @@ public abstract class AbstractCacheManager
     }
 
     /**
-     * Load the initial caches for this cache manager.
-     * <p>Called by {@link #afterPropertiesSet()} on startup.
      * The returned collection may be empty but must not be {@code null}.
      */
     protected abstract Collection<? extends Cache> loadCaches();
@@ -85,8 +94,6 @@ public abstract class AbstractCacheManager
         cacheNames.add(name);
         this.cacheNames = Collections.unmodifiableSet(cacheNames);
     }
-
-
 
     protected Cache decorateCache(Cache cache) {
         return cache;

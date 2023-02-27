@@ -4,6 +4,7 @@ import com.bsren.mycache.Cache;
 import com.bsren.mycache.CacheManager;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.core.serializer.support.SerializationDelegate;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
@@ -13,6 +14,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * BeanClassLoaderAware: 获取classLoader,然后加载到SerializationDelegate中，利用classLoader方便反序列化
+ * CacheManager implementation that lazily builds ConcurrentMapCache instances for each getCache request.
+ * Also supports a 'static' mode where the set of cache names is pre-defined through setCacheNames,
+ * with no dynamic creation of further cache regions at runtime.
+ */
 public class ConcurrentMapCacheManager implements CacheManager, BeanClassLoaderAware {
 
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
@@ -22,6 +29,10 @@ public class ConcurrentMapCacheManager implements CacheManager, BeanClassLoaderA
     private boolean allowNullValues = true;
 
     private boolean storeByValue = false;
+
+
+    @Nullable
+    private SerializationDelegate serialization;
 
     public ConcurrentMapCacheManager() {
     }
@@ -60,8 +71,6 @@ public class ConcurrentMapCacheManager implements CacheManager, BeanClassLoaderA
     }
 
 
-    @Nullable
-    private SerializationDelegate serialization;
 
     /**
      * Specify whether to accept and convert {@code null} values for all caches
@@ -84,9 +93,6 @@ public class ConcurrentMapCacheManager implements CacheManager, BeanClassLoaderA
             entry.setValue(createConcurrentMapCache(entry.getKey()));
         }
     }
-
-
-
 
     @Override
     @Nullable
@@ -117,8 +123,6 @@ public class ConcurrentMapCacheManager implements CacheManager, BeanClassLoaderA
             recreateCaches();
         }
     }
-
-
 
     /**
      * Return whether this cache manager stores a copy of each entry or
