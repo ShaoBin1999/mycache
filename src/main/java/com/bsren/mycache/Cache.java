@@ -8,7 +8,8 @@ public interface Cache {
 
     String getName();
 
-    Object getNativeCache();
+    @Nullable
+    ValueWrapper get(Object key);
 
     @Nullable
     <T> T get(Object key, @Nullable Class<T> type);
@@ -21,16 +22,9 @@ public interface Cache {
 
     @FunctionalInterface
     interface ValueWrapper {
-
-        /**
-         * Return the actual value in the cache.
-         */
         @Nullable
         Object get();
     }
-
-    @Nullable
-    ValueWrapper get(Object key);
 
     default boolean evictIfPresent(Object key) {
         evict(key);

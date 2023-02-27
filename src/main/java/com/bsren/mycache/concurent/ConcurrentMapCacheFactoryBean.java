@@ -8,6 +8,15 @@ import org.springframework.util.StringUtils;
 
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * FactoryBean是bean的一种模式
+ * BeanNameAware 注册 bean的名字
+ * InitializingBean 负责属性填充后的设置
+ *
+ * 这里是将concurrentMapCache封装为了spring的bean
+ *
+ * cache是对store的一层包裹
+ */
 public class ConcurrentMapCacheFactoryBean implements FactoryBean<ConcurrentMapCache>, BeanNameAware, InitializingBean {
 
     private String name = "";

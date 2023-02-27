@@ -4,7 +4,7 @@ import com.bsren.mycache.Cache;
 import org.springframework.lang.Nullable;
 
 /**
- * 接受null值
+ * 接受null值，使用Null-value，可能是方便后续序列化吧
  */
 public abstract class AbstractValueAdaptingCache implements Cache {
 
@@ -37,20 +37,11 @@ public abstract class AbstractValueAdaptingCache implements Cache {
     }
 
     /**
-     * Perform an actual lookup in the underlying store.
-     * @param key the key whose associated value is to be returned
-     * @return the raw store value for the key, or {@code null} if none
+     * 查找
      */
     @Nullable
     protected abstract Object lookup(Object key);
 
-
-    /**
-     * Convert the given value from the internal store to a user value
-     * returned from the get method (adapting {@code null}).
-     * @param storeValue the store value
-     * @return the value to return to the user
-     */
     @Nullable
     protected Object fromStoreValue(@Nullable Object storeValue) {
         if (this.allowNullValues && storeValue == NullValue.INSTANCE) {
@@ -59,12 +50,6 @@ public abstract class AbstractValueAdaptingCache implements Cache {
         return storeValue;
     }
 
-    /**
-     * Convert the given user value, as passed into the put method,
-     * to a value in the internal store (adapting {@code null}).
-     * @param userValue the given user value
-     * @return the value to store
-     */
     protected Object toStoreValue(@Nullable Object userValue) {
         if (userValue == null) {
             if (this.allowNullValues) {
@@ -76,13 +61,6 @@ public abstract class AbstractValueAdaptingCache implements Cache {
         return userValue;
     }
 
-    /**
-     * Wrap the given store value with a {@link SimpleValueWrapper}, also going
-     * through {@link #fromStoreValue} conversion. Useful for {@link #get(Object)}
-     * and {@link #putIfAbsent(Object, Object)} implementations.
-     * @param storeValue the original value
-     * @return the wrapped value
-     */
     @Nullable
     protected Cache.ValueWrapper toValueWrapper(@Nullable Object storeValue) {
         return (storeValue != null ? new SimpleValueWrapper(fromStoreValue(storeValue)) : null);

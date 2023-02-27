@@ -11,12 +11,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 使用一个concurrentMap作为容器
+ * 有名字
+ * 支持value的序列化和反序列化
+ */
 public class ConcurrentMapCache extends AbstractValueAdaptingCache {
 
     private final String name;
 
     private final ConcurrentMap<Object, Object> store;
-
 
     @Nullable
     private final SerializationDelegate serialization;
@@ -53,11 +57,6 @@ public class ConcurrentMapCache extends AbstractValueAdaptingCache {
     @Override
     public final String getName() {
         return this.name;
-    }
-
-    @Override
-    public final ConcurrentMap<Object, Object> getNativeCache() {
-        return this.store;
     }
 
     @Override
