@@ -42,4 +42,31 @@ public interface Cache {
         return false;
     }
 
+    class ValueRetrievalException extends RuntimeException {
+
+        @Nullable
+        private final Object key;
+
+        public ValueRetrievalException(@Nullable Object key, Callable<?> loader, Throwable ex) {
+            super(String.format("Value for key '%s' could not be loaded using '%s'", key, loader), ex);
+            this.key = key;
+        }
+
+        @Nullable
+        public Object getKey() {
+            return this.key;
+        }
+    }
+
+    @Nullable
+    <T> T get(Object key, Callable<T> valueLoader);
+
+    @Nullable
+    default Cache.ValueWrapper putIfAbsent(Object key, @Nullable Object value) {
+        Cache.ValueWrapper existingValue = get(key);
+        if (existingValue == null) {
+            put(key, value);
+        }
+        return existingValue;
+    }
 }
